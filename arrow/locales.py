@@ -50,14 +50,7 @@ def get_locale(name: str) -> "Locale":
     :param name: the name of the locale.
 
     """
-
-    normalized_locale_name = name.lower().replace("_", "-")
-    locale_cls = _locale_map.get(normalized_locale_name)
-
-    if locale_cls is None:
-        raise ValueError(f"Unsupported locale {normalized_locale_name!r}.")
-
-    return locale_cls()
+    pass
 
 
 def get_locale_by_class_name(name: str) -> "Locale":
@@ -67,12 +60,7 @@ def get_locale_by_class_name(name: str) -> "Locale":
     :param name: the name of the locale class.
 
     """
-    locale_cls: Optional[Type[Locale]] = globals().get(name)
-
-    if locale_cls is None:
-        raise ValueError(f"Unsupported locale {name!r}.")
-
-    return locale_cls()
+    pass
 
 
 class Locale:
@@ -138,12 +126,7 @@ class Locale:
         :param delta: a quantity representing a delta in a timeframe.
         :param only_distance: return only distance eg: "11 seconds" without "in" or "ago" keywords
         """
-
-        humanized = self._format_timeframe(timeframe, trunc(delta))
-        if not only_distance:
-            humanized = self._format_relative(humanized, timeframe, delta)
-
-        return humanized
+        pass
 
     def describe_multi(
         self,
@@ -155,28 +138,7 @@ class Locale:
         :param timeframes: a list of string, quantity pairs each representing a timeframe and delta.
         :param only_distance: return only distance eg: "2 hours and 11 seconds" without "in" or "ago" keywords
         """
-
-        parts = [
-            self._format_timeframe(timeframe, trunc(delta))
-            for timeframe, delta in timeframes
-        ]
-        if self.and_word:
-            parts.insert(-1, self.and_word)
-        humanized = " ".join(parts)
-
-        if not only_distance:
-            # Needed to determine the correct relative string to use
-            timeframe_value = 0
-
-            for _, unit_value in timeframes:
-                if trunc(unit_value) != 0:
-                    timeframe_value = trunc(unit_value)
-                    break
-
-            # Note it doesn't matter the timeframe unit we use on the call, only the value
-            humanized = self._format_relative(humanized, "seconds", timeframe_value)
-
-        return humanized
+        pass
 
     def day_name(self, day: int) -> str:
         """Returns the day name for a specified day of the week.
@@ -184,8 +146,7 @@ class Locale:
         :param day: the ``int`` day of the week (1-7).
 
         """
-
-        return self.day_names[day]
+        pass
 
     def day_abbreviation(self, day: int) -> str:
         """Returns the day abbreviation for a specified day of the week.
@@ -193,8 +154,7 @@ class Locale:
         :param day: the ``int`` day of the week (1-7).
 
         """
-
-        return self.day_abbreviations[day]
+        pass
 
     def month_name(self, month: int) -> str:
         """Returns the month name for a specified month of the year.
@@ -202,8 +162,7 @@ class Locale:
         :param month: the ``int`` month of the year (1-12).
 
         """
-
-        return self.month_names[month]
+        pass
 
     def month_abbreviation(self, month: int) -> str:
         """Returns the month abbreviation for a specified month of the year.
@@ -211,8 +170,7 @@ class Locale:
         :param month: the ``int`` month of the year (1-12).
 
         """
-
-        return self.month_abbreviations[month]
+        pass
 
     def month_number(self, name: str) -> Optional[int]:
         """Returns the month number for a month specified by name or abbreviation.
@@ -220,28 +178,21 @@ class Locale:
         :param name: the month name or abbreviation.
 
         """
-
-        if self._month_name_to_ordinal is None:
-            self._month_name_to_ordinal = self._name_to_ordinal(self.month_names)
-            self._month_name_to_ordinal.update(
-                self._name_to_ordinal(self.month_abbreviations)
-            )
-
-        return self._month_name_to_ordinal.get(name)
+        pass
 
     def year_full(self, year: int) -> str:
         """Returns the year for specific locale if available
 
         :param year: the ``int`` year (4-digit)
         """
-        return f"{year:04d}"
+        pass
 
     def year_abbreviation(self, year: int) -> str:
         """Returns the year for specific locale if available
 
         :param year: the ``int`` year (4-digit)
         """
-        return f"{year:04d}"[2:]
+        pass
 
     def meridian(self, hour: int, token: Any) -> Optional[str]:
         """Returns the meridian indicator for a specified hour and format token.
@@ -249,42 +200,18 @@ class Locale:
         :param hour: the ``int`` hour of the day.
         :param token: the format token.
         """
-
-        if token == "a":
-            return self.meridians["am"] if hour < 12 else self.meridians["pm"]
-        if token == "A":
-            return self.meridians["AM"] if hour < 12 else self.meridians["PM"]
-        return None
+        pass
 
     def ordinal_number(self, n: int) -> str:
         """Returns the ordinal format of a given integer
 
         :param n: an integer
         """
-        return self._ordinal_number(n)
+        pass
 
-    def _ordinal_number(self, n: int) -> str:
-        return f"{n}"
 
-    def _name_to_ordinal(self, lst: Sequence[str]) -> Dict[str, int]:
-        return {elem.lower(): i for i, elem in enumerate(lst[1:], 1)}
 
-    def _format_timeframe(self, timeframe: TimeFrameLiteral, delta: int) -> str:
-        # TODO: remove cast
-        return cast(str, self.timeframes[timeframe]).format(trunc(abs(delta)))
 
-    def _format_relative(
-        self,
-        humanized: str,
-        timeframe: TimeFrameLiteral,
-        delta: Union[float, int],
-    ) -> str:
-        if timeframe == "now":
-            return humanized
-
-        direction = self.past if delta < 0 else self.future
-
-        return direction.format(humanized)
 
 
 class EnglishLocale(Locale):
@@ -371,16 +298,6 @@ class EnglishLocale(Locale):
 
     ordinal_day_re = r"((?P<value>[2-3]?1(?=st)|[2-3]?2(?=nd)|[2-3]?3(?=rd)|[1-3]?[04-9](?=th)|1[1-3](?=th))(st|nd|rd|th))"
 
-    def _ordinal_number(self, n: int) -> str:
-        if n % 100 not in (11, 12, 13):
-            remainder = abs(n) % 10
-            if remainder == 1:
-                return f"{n}st"
-            elif remainder == 2:
-                return f"{n}nd"
-            elif remainder == 3:
-                return f"{n}rd"
-        return f"{n}th"
 
     def describe(
         self,
@@ -394,12 +311,7 @@ class EnglishLocale(Locale):
         :param delta: a quantity representing a delta in a timeframe.
         :param only_distance: return only distance eg: "11 seconds" without "in" or "ago" keywords
         """
-
-        humanized = super().describe(timeframe, delta, only_distance)
-        if only_distance and timeframe == "now":
-            humanized = "instantly"
-
-        return humanized
+        pass
 
 
 class ItalianLocale(Locale):
@@ -471,8 +383,6 @@ class ItalianLocale(Locale):
 
     ordinal_day_re = r"((?P<value>[1-3]?[0-9](?=[ºª]))[ºª])"
 
-    def _ordinal_number(self, n: int) -> str:
-        return f"{n}º"
 
 
 class SpanishLocale(Locale):
@@ -546,8 +456,6 @@ class SpanishLocale(Locale):
 
     ordinal_day_re = r"((?P<value>[1-3]?[0-9](?=[ºª]))[ºª])"
 
-    def _ordinal_number(self, n: int) -> str:
-        return f"{n}º"
 
 
 class FrenchBaseLocale(Locale):
@@ -605,10 +513,6 @@ class FrenchBaseLocale(Locale):
         r"((?P<value>\b1(?=er\b)|[1-3]?[02-9](?=e\b)|[1-3]1(?=e\b))(er|e)\b)"
     )
 
-    def _ordinal_number(self, n: int) -> str:
-        if abs(n) == 1:
-            return f"{n}er"
-        return f"{n}e"
 
 
 class FrenchLocale(FrenchBaseLocale, Locale):
@@ -931,19 +835,7 @@ class FinnishLocale(Locale):
 
     day_abbreviations = ["", "ma", "ti", "ke", "to", "pe", "la", "su"]
 
-    def _format_timeframe(self, timeframe: TimeFrameLiteral, delta: int) -> str:
-        form = self.timeframes[timeframe]
 
-        if isinstance(form, Mapping):
-            if delta < 0:
-                form = form["past"]
-            else:
-                form = form["future"]
-
-        return form.format(abs(delta))
-
-    def _ordinal_number(self, n: int) -> str:
-        return f"{n}."
 
 
 class ChineseCNLocale(Locale):
@@ -1220,40 +1112,7 @@ class KoreanLocale(Locale):
     ]
     day_abbreviations = ["", "월", "화", "수", "목", "금", "토", "일"]
 
-    def _ordinal_number(self, n: int) -> str:
-        ordinals = [
-            "0",
-            "첫",
-            "두",
-            "세",
-            "네",
-            "다섯",
-            "여섯",
-            "일곱",
-            "여덟",
-            "아홉",
-            "열",
-        ]
-        if n < len(ordinals):
-            return f"{ordinals[n]}번째"
-        return f"{n}번째"
 
-    def _format_relative(
-        self,
-        humanized: str,
-        timeframe: TimeFrameLiteral,
-        delta: Union[float, int],
-    ) -> str:
-        if timeframe in ("day", "days"):
-            special = self.special_dayframes.get(int(delta))
-            if special:
-                return special
-        elif timeframe in ("year", "years"):
-            special = self.special_yearframes.get(int(delta))
-            if special:
-                return special
-
-        return super()._format_relative(humanized, timeframe, delta)
 
 
 # derived locale types & implementations.
@@ -1330,19 +1189,6 @@ class DutchLocale(Locale):
 class SlavicBaseLocale(Locale):
     timeframes: ClassVar[Mapping[TimeFrameLiteral, Union[str, Mapping[str, str]]]]
 
-    def _format_timeframe(self, timeframe: TimeFrameLiteral, delta: int) -> str:
-        form = self.timeframes[timeframe]
-        delta = abs(delta)
-
-        if isinstance(form, Mapping):
-            if delta % 10 == 1 and delta % 100 != 11:
-                form = form["singular"]
-            elif 2 <= delta % 10 <= 4 and (delta % 100 < 10 or delta % 100 >= 20):
-                form = form["dual"]
-            else:
-                form = form["plural"]
-
-        return form.format(delta)
 
 
 class BelarusianLocale(SlavicBaseLocale):
@@ -2105,8 +1951,6 @@ class GermanBaseLocale(Locale):
 
     day_abbreviations = ["", "Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
 
-    def _ordinal_number(self, n: int) -> str:
-        return f"{n}."
 
     def describe(
         self,
@@ -2120,16 +1964,7 @@ class GermanBaseLocale(Locale):
         :param delta: a quantity representing a delta in a timeframe.
         :param only_distance: return only distance eg: "11 seconds" without "in" or "ago" keywords
         """
-
-        if not only_distance:
-            return super().describe(timeframe, delta, only_distance)
-
-        # German uses a different case without 'in' or 'ago'
-        humanized: str = self.timeframes_only_distance[timeframe].format(
-            trunc(abs(delta))
-        )
-
-        return humanized
+        pass
 
 
 class GermanLocale(GermanBaseLocale, Locale):
@@ -2227,8 +2062,6 @@ class NorwegianLocale(Locale):
     ]
     day_abbreviations = ["", "ma", "ti", "on", "to", "fr", "lø", "sø"]
 
-    def _ordinal_number(self, n: int) -> str:
-        return f"{n}."
 
 
 class NewNorwegianLocale(Locale):
@@ -2298,8 +2131,6 @@ class NewNorwegianLocale(Locale):
     ]
     day_abbreviations = ["", "må", "ty", "on", "to", "fr", "la", "su"]
 
-    def _ordinal_number(self, n: int) -> str:
-        return f"{n}."
 
 
 class PortugueseLocale(Locale):
@@ -2446,8 +2277,6 @@ class TagalogLocale(Locale):
 
     meridians = {"am": "nu", "pm": "nh", "AM": "ng umaga", "PM": "ng hapon"}
 
-    def _ordinal_number(self, n: int) -> str:
-        return f"ika-{n}"
 
 
 class VietnameseLocale(Locale):
@@ -2743,18 +2572,6 @@ class ArabicLocale(Locale):
     ]
     day_abbreviations = ["", "إثنين", "ثلاثاء", "أربعاء", "خميس", "جمعة", "سبت", "أحد"]
 
-    def _format_timeframe(self, timeframe: TimeFrameLiteral, delta: int) -> str:
-        form = self.timeframes[timeframe]
-        delta = abs(delta)
-        if isinstance(form, Mapping):
-            if delta == 2:
-                form = form["2"]
-            elif 2 < delta <= 10:
-                form = form["ten"]
-            else:
-                form = form["higher"]
-
-        return form.format(delta)
 
 
 class LevantArabicLocale(ArabicLocale):
@@ -2894,22 +2711,6 @@ class MoroccoArabicLocale(ArabicLocale):
 
 
 class IcelandicLocale(Locale):
-    def _format_timeframe(self, timeframe: TimeFrameLiteral, delta: int) -> str:
-        form = self.timeframes[timeframe]
-
-        if isinstance(form, Mapping):
-            if delta < 0:
-                form = form["past"]
-            elif delta > 0:
-                form = form["future"]
-            else:
-                raise ValueError(
-                    "Icelandic Locale does not support units with a delta of zero. "
-                    "Please consider making a contribution to fix this issue."
-                )
-                # FIXME: handle when delta is 0
-
-        return form.format(abs(delta))
 
     names = ["is", "is-is"]
 
@@ -3046,8 +2847,6 @@ class DanishLocale(Locale):
     ]
     day_abbreviations = ["", "man", "tir", "ons", "tor", "fre", "lør", "søn"]
 
-    def _ordinal_number(self, n: int) -> str:
-        return f"{n}."
 
 
 class MalayalamLocale(Locale):
@@ -3296,29 +3095,7 @@ class CzechLocale(Locale):
     def _format_timeframe(self, timeframe: TimeFrameLiteral, delta: int) -> str:
         """Czech aware time frame format function, takes into account
         the differences between past and future forms."""
-        abs_delta = abs(delta)
-        form = self.timeframes[timeframe]
-
-        if isinstance(form, str):
-            return form.format(abs_delta)
-
-        if delta == 0:
-            key = "zero"  # And *never* use 0 in the singular!
-        elif delta < 0:
-            key = "past"
-        else:
-            # Needed since both regular future and future-singular and future-paucal cases
-            if "future-singular" not in form:
-                key = "future"
-            elif 2 <= abs_delta % 10 <= 4 and (
-                abs_delta % 100 < 10 or abs_delta % 100 >= 20
-            ):
-                key = "future-singular"
-            else:
-                key = "future-paucal"
-
-        form: str = form[key]
-        return form.format(abs_delta)
+        pass
 
 
 class SlovakLocale(Locale):
@@ -3427,28 +3204,7 @@ class SlovakLocale(Locale):
     def _format_timeframe(self, timeframe: TimeFrameLiteral, delta: int) -> str:
         """Slovak aware time frame format function, takes into account
         the differences between past and future forms."""
-        abs_delta = abs(delta)
-        form = self.timeframes[timeframe]
-
-        if isinstance(form, str):
-            return form.format(abs_delta)
-
-        if delta == 0:
-            key = "zero"  # And *never* use 0 in the singular!
-        elif delta < 0:
-            key = "past"
-        else:
-            if "future-singular" not in form:
-                key = "future"
-            elif 2 <= abs_delta % 10 <= 4 and (
-                abs_delta % 100 < 10 or abs_delta % 100 >= 20
-            ):
-                key = "future-singular"
-            else:
-                key = "future-paucal"
-
-        form: str = form[key]
-        return form.format(abs_delta)
+        pass
 
 
 class FarsiLocale(Locale):
@@ -3603,18 +3359,6 @@ class HebrewLocale(Locale):
     day_names = ["", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת", "ראשון"]
     day_abbreviations = ["", "ב׳", "ג׳", "ד׳", "ה׳", "ו׳", "ש׳", "א׳"]
 
-    def _format_timeframe(self, timeframe: TimeFrameLiteral, delta: int) -> str:
-        form = self.timeframes[timeframe]
-        delta = abs(delta)
-        if isinstance(form, Mapping):
-            if delta == 2:
-                form = form["2"]
-            elif delta == 0 or 2 < delta <= 10:
-                form = form["ten"]
-            else:
-                form = form["higher"]
-
-        return form.format(delta)
 
     def describe_multi(
         self,
@@ -3627,24 +3371,7 @@ class HebrewLocale(Locale):
         :param timeframes: a list of string, quantity pairs each representing a timeframe and delta.
         :param only_distance: return only distance eg: "2 hours and 11 seconds" without "in" or "ago" keywords
         """
-
-        humanized = ""
-        for index, (timeframe, delta) in enumerate(timeframes):
-            last_humanized = self._format_timeframe(timeframe, trunc(delta))
-            if index == 0:
-                humanized = last_humanized
-            elif index == len(timeframes) - 1:  # Must have at least 2 items
-                humanized += " " + self.and_word
-                if last_humanized[0].isdecimal():
-                    humanized += "־"
-                humanized += last_humanized
-            else:  # Don't add for the last one
-                humanized += ", " + last_humanized
-
-        if not only_distance:
-            humanized = self._format_relative(humanized, timeframe, trunc(delta))
-
-        return humanized
+        pass
 
 
 class MarathiLocale(Locale):
@@ -3924,16 +3651,6 @@ class HungarianLocale(Locale):
 
     meridians = {"am": "de", "pm": "du", "AM": "DE", "PM": "DU"}
 
-    def _format_timeframe(self, timeframe: TimeFrameLiteral, delta: int) -> str:
-        form = self.timeframes[timeframe]
-
-        if isinstance(form, Mapping):
-            if delta > 0:
-                form = form["future"]
-            else:
-                form = form["past"]
-
-        return form.format(abs(delta))
 
 
 class EsperantoLocale(Locale):
@@ -4004,8 +3721,6 @@ class EsperantoLocale(Locale):
 
     ordinal_day_re = r"((?P<value>[1-3]?[0-9](?=a))a)"
 
-    def _ordinal_number(self, n: int) -> str:
-        return f"{n}a"
 
 
 class ThaiLocale(Locale):
@@ -4081,13 +3796,11 @@ class ThaiLocale(Locale):
 
     def year_full(self, year: int) -> str:
         """Thai always use Buddhist Era (BE) which is CE + 543"""
-        year += self.BE_OFFSET
-        return f"{year:04d}"
+        pass
 
     def year_abbreviation(self, year: int) -> str:
         """Thai always use Buddhist Era (BE) which is CE + 543"""
-        year += self.BE_OFFSET
-        return f"{year:04d}"[2:]
+        pass
 
     def _format_relative(
         self,
@@ -4096,16 +3809,7 @@ class ThaiLocale(Locale):
         delta: Union[float, int],
     ) -> str:
         """Thai normally doesn't have any space between words"""
-        if timeframe == "now":
-            return humanized
-
-        direction = self.past if delta < 0 else self.future
-        relative_string = direction.format(humanized)
-
-        if timeframe == "seconds":
-            relative_string = relative_string.replace(" ", "")
-
-        return relative_string
+        pass
 
 
 class LaotianLocale(Locale):
@@ -4188,13 +3892,11 @@ class LaotianLocale(Locale):
 
     def year_full(self, year: int) -> str:
         """Lao always use Buddhist Era (BE) which is CE + 543"""
-        year += self.BE_OFFSET
-        return f"{year:04d}"
+        pass
 
     def year_abbreviation(self, year: int) -> str:
         """Lao always use Buddhist Era (BE) which is CE + 543"""
-        year += self.BE_OFFSET
-        return f"{year:04d}"[2:]
+        pass
 
     def _format_relative(
         self,
@@ -4203,16 +3905,7 @@ class LaotianLocale(Locale):
         delta: Union[float, int],
     ) -> str:
         """Lao normally doesn't have any space between words"""
-        if timeframe == "now":
-            return humanized
-
-        direction = self.past if delta < 0 else self.future
-        relative_string = direction.format(humanized)
-
-        if timeframe == "seconds":
-            relative_string = relative_string.replace(" ", "")
-
-        return relative_string
+        pass
 
 
 class BengaliLocale(Locale):
@@ -4282,18 +3975,6 @@ class BengaliLocale(Locale):
     ]
     day_abbreviations = ["", "সোম", "মঙ্গল", "বুধ", "বৃহঃ", "শুক্র", "শনি", "রবি"]
 
-    def _ordinal_number(self, n: int) -> str:
-        if n > 10 or n == 0:
-            return f"{n}তম"
-        if n in [1, 5, 7, 8, 9, 10]:
-            return f"{n}ম"
-        if n in [2, 3]:
-            return f"{n}য়"
-        if n == 4:
-            return f"{n}র্থ"
-        if n == 6:
-            return f"{n}ষ্ঠ"
-        return ""
 
 
 class RomanshLocale(Locale):
@@ -4714,13 +4395,6 @@ class EstonianLocale(Locale):
     ]
     day_abbreviations = ["", "Esm", "Teis", "Kolm", "Nelj", "Re", "Lau", "Püh"]
 
-    def _format_timeframe(self, timeframe: TimeFrameLiteral, delta: int) -> str:
-        form = self.timeframes[timeframe]
-        if delta > 0:
-            _form = form["future"]
-        else:
-            _form = form["past"]
-        return _form.format(abs(delta))
 
 
 class LatvianLocale(Locale):
@@ -4966,16 +4640,6 @@ class CroatianLocale(Locale):
         "ne",
     ]
 
-    def _format_timeframe(self, timeframe: TimeFrameLiteral, delta: int) -> str:
-        form = self.timeframes[timeframe]
-        delta = abs(delta)
-        if isinstance(form, Mapping):
-            if 1 < delta <= 4:
-                form = form["double"]
-            else:
-                form = form["higher"]
-
-        return form.format(delta)
 
 
 class LatinLocale(Locale):
@@ -5297,16 +4961,6 @@ class MalteseLocale(Locale):
         "Ħ",
     ]
 
-    def _format_timeframe(self, timeframe: TimeFrameLiteral, delta: int) -> str:
-        form = self.timeframes[timeframe]
-        delta = abs(delta)
-        if isinstance(form, Mapping):
-            if delta == 2:
-                form = form["dual"]
-            else:
-                form = form["plural"]
-
-        return form.format(delta)
 
 
 class SamiLocale(Locale):
@@ -5464,18 +5118,6 @@ class OdiaLocale(Locale):
         "ରବି",
     ]
 
-    def _ordinal_number(self, n: int) -> str:
-        if n > 10 or n == 0:
-            return f"{n}ତମ"
-        if n in [1, 5, 7, 8, 9, 10]:
-            return f"{n}ମ"
-        if n in [2, 3]:
-            return f"{n}ୟ"
-        if n == 4:
-            return f"{n}ର୍ଥ"
-        if n == 6:
-            return f"{n}ଷ୍ଠ"
-        return ""
 
 
 class SerbianLocale(Locale):
@@ -5557,16 +5199,6 @@ class SerbianLocale(Locale):
         "ne",  # не
     ]
 
-    def _format_timeframe(self, timeframe: TimeFrameLiteral, delta: int) -> str:
-        form = self.timeframes[timeframe]
-        delta = abs(delta)
-        if isinstance(form, Mapping):
-            if 1 < delta <= 4:
-                form = form["double"]
-            else:
-                form = form["higher"]
-
-        return form.format(delta)
 
 
 class LuxembourgishLocale(Locale):
@@ -5651,24 +5283,7 @@ class LuxembourgishLocale(Locale):
 
     day_abbreviations = ["", "Méi", "Dën", "Mët", "Don", "Fre", "Sam", "Son"]
 
-    def _ordinal_number(self, n: int) -> str:
-        return f"{n}."
 
-    def describe(
-        self,
-        timeframe: TimeFrameLiteral,
-        delta: Union[int, float] = 0,
-        only_distance: bool = False,
-    ) -> str:
-        if not only_distance:
-            return super().describe(timeframe, delta, only_distance)
-
-        # Luxembourgish uses a different case without 'in' or 'ago'
-        humanized: str = self.timeframes_only_distance[timeframe].format(
-            trunc(abs(delta))
-        )
-
-        return humanized
 
 
 class ZuluLocale(Locale):
@@ -5699,19 +5314,7 @@ class ZuluLocale(Locale):
     def _format_timeframe(self, timeframe: TimeFrameLiteral, delta: int) -> str:
         """Zulu aware time frame format function, takes into account
         the differences between past and future forms."""
-        abs_delta = abs(delta)
-        form = self.timeframes[timeframe]
-
-        if isinstance(form, str):
-            return form.format(abs_delta)
-
-        if delta > 0:
-            key = "future"
-        else:
-            key = "past"
-        form = form[key]
-
-        return form.format(abs_delta)
+        pass
 
     month_names = [
         "",
@@ -5846,13 +5449,6 @@ class TamilLocale(Locale):
         "ஞாயிறு",
     ]
 
-    def _ordinal_number(self, n: int) -> str:
-        if n == 1:
-            return f"{n}வது"
-        elif n >= 0:
-            return f"{n}ஆம்"
-        else:
-            return ""
 
 
 class AlbanianLocale(Locale):
@@ -6093,19 +5689,7 @@ class SinhalaLocale(Locale):
         Sinhala awares time frame format function, takes into account
         the differences between general, past, and future forms (three different suffixes).
         """
-        abs_delta = abs(delta)
-        form = self.timeframes[timeframe]
-
-        if isinstance(form, str):
-            return form.format(abs_delta)
-
-        if delta > 0:
-            key = "future"
-        else:
-            key = "past"
-        form = form[key]
-
-        return form.format(abs_delta)
+        pass
 
     def describe(
         self,
@@ -6119,13 +5703,7 @@ class SinhalaLocale(Locale):
         :param delta: a quantity representing a delta in a timeframe.
         :param only_distance: return only distance eg: "11 seconds" without "in" or "ago" keywords
         """
-
-        if not only_distance:
-            return super().describe(timeframe, delta, only_distance)
-        # Sinhala uses a different case without 'in' or 'ago'
-        humanized = self.timeframes_only_distance[timeframe].format(trunc(abs(delta)))
-
-        return humanized
+        pass
 
     month_names = [
         "",
@@ -6458,27 +6036,13 @@ class AmharicLocale(Locale):
     ]
     day_abbreviations = ["", "እ", "ሰ", "ማ", "ረ", "ሐ", "ዓ", "ቅ"]
 
-    def _ordinal_number(self, n: int) -> str:
-        return f"{n}ኛ"
 
     def _format_timeframe(self, timeframe: TimeFrameLiteral, delta: int) -> str:
         """
         Amharic awares time frame format function, takes into account
         the differences between general, past, and future forms (three different suffixes).
         """
-        abs_delta = abs(delta)
-        form = self.timeframes[timeframe]
-
-        if isinstance(form, str):
-            return form.format(abs_delta)
-
-        if delta > 0:
-            key = "future"
-        else:
-            key = "past"
-        form = form[key]
-
-        return form.format(abs_delta)
+        pass
 
     def describe(
         self,
@@ -6492,12 +6056,7 @@ class AmharicLocale(Locale):
         :param delta: a quantity representing a delta in a timeframe.
         :param only_distance: return only distance eg: "11 seconds" without "in" or "ago" keywords
         """
-
-        if not only_distance:
-            return super().describe(timeframe, delta, only_distance)
-        humanized = self.timeframes_only_distance[timeframe].format(trunc(abs(delta)))
-
-        return humanized
+        pass
 
 
 class ArmenianLocale(Locale):
